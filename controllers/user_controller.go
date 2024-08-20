@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"test_case/auth"
 	"test_case/database"
 	"test_case/models"
 
@@ -9,10 +10,17 @@ import (
 )
 
 func GetUserData(c *gin.Context) {
-	iduser := c.Param("iduser")
+	tokenString := c.GetHeader("Authorization")
+	const BEARER_SCHEMA = "Bearer "
+	tokenString = tokenString[len(BEARER_SCHEMA):]
+	parse, err := auth.ParseToken(tokenString)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not login"})
+		return
+	}
 
 	var user models.User
-	if err := database.DB.Preload("Addresses").Where("iduser = ?", iduser).First(&user).Error; err != nil {
+	if err := database.DB.Preload("Addresses").Where("id_user = ?", parse.IdUser).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
@@ -21,7 +29,15 @@ func GetUserData(c *gin.Context) {
 }
 
 func UpdateUserAddress(c *gin.Context) {
-	iduser := c.Param("iduser")
+	tokenString := c.GetHeader("Authorization")
+	const BEARER_SCHEMA = "Bearer "
+	tokenString = tokenString[len(BEARER_SCHEMA):]
+	parse, err := auth.ParseToken(tokenString)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not login"})
+		return
+	}
+
 	var input models.Address
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -31,7 +47,7 @@ func UpdateUserAddress(c *gin.Context) {
 
 	tx := database.DB.Begin()
 
-	if err := tx.Model(&models.Address{}).Where("iduser = ?", iduser).Updates(input).Error; err != nil {
+	if err := tx.Model(&models.Address{}).Where("id_user = ?", parse.IdUser).Updates(input).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

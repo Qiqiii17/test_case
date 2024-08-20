@@ -35,8 +35,8 @@ func main() {
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 	{
-		protected.GET("/user/:iduser", controllers.GetUserData)
-		protected.PUT("/user/:iduser/address", controllers.UpdateUserAddress)
+		protected.GET("/user", controllers.GetUserData)
+		protected.PUT("/user", controllers.UpdateUserAddress)
 	}
 
 	// Debugging Routes

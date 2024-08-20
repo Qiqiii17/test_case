@@ -44,7 +44,7 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	tx.Commit()
-	c.JSON(http.StatusOK, gin.H{"data": userInput})
+	c.JSON(http.StatusOK, gin.H{"data": true})
 }
 
 func LoginUser(c *gin.Context) {
@@ -58,7 +58,7 @@ func LoginUser(c *gin.Context) {
 	}
 
 	var user models.User
-	if err := database.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
+	if err := database.DB.Where("email = ? and isactive=1", input.Email).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}

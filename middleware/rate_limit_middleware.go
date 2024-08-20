@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"test_case/models" // Ganti dengan path yang sesuai
+	"test_case/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
