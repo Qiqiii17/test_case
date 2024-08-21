@@ -1,5 +1,7 @@
 Nama Kandidat		    : Vicky Ananda Alfarezal
+
 Posisi			        : Backend Developer (Golang)
+
 Penggunaan Service 	    :
 
 1.	Framework
